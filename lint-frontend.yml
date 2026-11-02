@@ -1,0 +1,29 @@
+name: Lint Frontend
+
+on: [push, pull_request]
+
+jobs:
+  lint-frontend:
+    runs-on: ubuntu-latest
+    name: Lint HTML, CSS, and JS
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install linters
+        run: npm install -g htmlhint stylelint eslint
+
+      # Rules live in .htmlhintrc, .stylelintrc.json and eslint.config.mjs at the repo root.
+      # "|| true" lets the job report problems without failing the build.
+      - name: Lint HTML
+        run: htmlhint "app/src/main/resources/static/index.html" "app/src/main/resources/static/pages/*.html" "app/src/main/resources/templates/**/*.html" || true
+
+      - name: Lint CSS
+        run: stylelint "app/src/main/resources/static/assets/css/*.css" || true
+
+      - name: Lint JS
+        run: eslint "app/src/main/resources/static/js/**/*.js" || true
